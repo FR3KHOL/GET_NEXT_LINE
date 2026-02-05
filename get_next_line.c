@@ -6,26 +6,19 @@
 /*   By: hilyas <hilyas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/11 15:00:13 by hilyas            #+#    #+#             */
-/*   Updated: 2026/01/30 17:36:55 by hilyas           ###   ########.fr       */
+/*   Updated: 2026/02/05 15:34:15 by hilyas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	got_newln(char *s)
+static void	clean_buff(char **ptr)
 {
-	int	i;
-
-	if (!s)
-		return (0);
-	i = 0;
-	while (s[i])
+	if (*ptr)
 	{
-		if (s[i] == '\n')
-			return (1);
-		i++;
+		free(*ptr);
+		*ptr = NULL;
 	}
-	return (0);
 }
 
 int	len_til_nline(char *str)
@@ -57,40 +50,29 @@ char	*extract_myline(char **buff)
 	return (line);
 }
 
-static void	clean_buff(char **ptr)
+char	*read_more(int fd, char *buf)
 {
-	if (*ptr)
-	{
-		free(*ptr);
-		*ptr = NULL;
-	}
-}
+	char	*tmp;
+	ssize_t	r;
 
-char	*read_more(int fd, char **buff)
-{
-	ssize_t	rd_bytes;
-	char	*tmp_buf;
-	char	*old_buff;
-
-	while (got_newln(*buff) == 0)
+	tmp = malloc(BUFFER_SIZE + 1);
+	if (!tmp)
+		return (clean_buff(&buf), NULL);
+	r = 1;
+	while (r > 0 && !got_newln(buf))
 	{
-		tmp_buf = (char *)malloc(BUFFER_SIZE + 1);
-		if (!tmp_buf)
-			return (clean_buff(buff), NULL);
-		rd_bytes = read(fd, tmp_buf, BUFFER_SIZE);
-		if (rd_bytes < 0)
-			return (clean_buff(buff), free(tmp_buf), NULL);
-		tmp_buf[rd_bytes] = '\0';
-		old_buff = *buff;
-		*buff = ft_strjoin(*buff, tmp_buf);
-		if (!*buff)
-			return (clean_buff(&old_buff), free(tmp_buf), NULL);
-		free(old_buff);
-		free(tmp_buf);
-		if (rd_bytes == 0)
+		r = read(fd, tmp, BUFFER_SIZE);
+		if (r == -1)
+			return (free(tmp), clean_buff(&buf), NULL);
+		if (r == 0)
 			break ;
+		tmp[r] = '\0';
+		buf = ft_strjoin(buf, tmp);
+		if (!buf)
+			return (free(tmp), NULL);
 	}
-	return (*buff);
+	free(tmp);
+	return (buf);
 }
 
 char	*get_next_line(int fd)
@@ -101,7 +83,7 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (clean_buff(&buffer), NULL);
-	buffer = read_more(fd, &buffer);
+	buffer = read_more(fd, buffer);
 	if (!buffer || !*buffer)
 		return (clean_buff(&buffer), NULL);
 	line = extract_myline(&buffer);

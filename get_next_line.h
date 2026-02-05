@@ -6,7 +6,7 @@
 /*   By: hilyas <hilyas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/11 15:00:40 by hilyas            #+#    #+#             */
-/*   Updated: 2026/01/29 18:37:20 by hilyas           ###   ########.fr       */
+/*   Updated: 2026/02/05 15:46:10 by hilyas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,6 @@ char	*get_next_line(int fd);
 int		got_newln(char *str);
 int		len_til_nline(char *str);
 char	*extract_myline(char **buff);
-char	*read_more(int fd, char **buff);
+char	*read_more(int fd, char *buf);
 
 #endif

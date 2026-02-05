@@ -6,8 +6,20 @@
 /*   By: hilyas <hilyas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/11 15:00:28 by hilyas            #+#    #+#             */
-/*   Updated: 2026/01/29 18:16:54 by hilyas           ###   ########.fr       */
+/*   Updated: 2026/02/05 15:47:17 by hilyas           ###   ########.fr       */
 /*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/* */
+/* :::      ::::::::   */
+/* get_next_line_utils.c                              :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: hilyas <hilyas@student.42.fr>              +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: 2026/01/11 15:00:28 by hilyas            #+#    #+#             */
+/* Updated: 2026/01/30 18:00:00 by hilyas           ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
@@ -22,43 +34,20 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-char	*ft_strcatin(char *result, char *s1, char *s2)
+int	got_newln(char *s)
 {
-	size_t	i;
-	size_t	j;
+	int	i;
 
+	if (!s)
+		return (0);
 	i = 0;
-	j = 0;
-	while (s1[i])
+	while (s[i])
 	{
-		result[i] = s1[i];
+		if (s[i] == '\n')
+			return (1);
 		i++;
 	}
-	while (s2[j])
-	{
-		result[i] = s2[j];
-		i++;
-		j++;
-	}
-	result[i] = '\0';
-	return (result);
-}
-
-char	*ft_strjoin(char *s1, char *s2) // Simple s1, s2 naming
-{
-	char *new_str;
-
-	if (!s1 && !s2)
-		return (NULL);
-	if (!s2)
-		return (ft_strdup(s1));
-	if (!s1)
-		return (ft_strdup(s2));
-	new_str = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!new_str)
-		return (NULL);
-	ft_strcatin(new_str, s1, s2);
-	return (new_str);
+	return (0);
 }
 
 char	*ft_strdup(char *src)
@@ -81,10 +70,39 @@ char	*ft_strdup(char *src)
 	return (copy);
 }
 
+char	*ft_strjoin(char *s1, char *s2)
+{
+	char	*str;
+	size_t	i;
+	size_t	j;
+
+	if (!s1)
+	{
+		s1 = (char *)malloc(1);
+		if (!s1)
+			return (NULL);
+		s1[0] = '\0';
+	}
+	if (!s1 || !s2)
+		return (NULL);
+	str = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (!str)
+		return (NULL);
+	i = -1;
+	j = 0;
+	if (s1)
+		while (s1[++i] != '\0')
+			str[i] = s1[i];
+	while (s2[j] != '\0')
+		str[i++] = s2[j++];
+	str[i] = '\0';
+	return (free(s1), str);
+}
+
 size_t	ft_strlcpy(char *dest, char *src, size_t sz)
 {
-	size_t srclen;
-	size_t i;
+	size_t	srclen;
+	size_t	i;
 
 	i = 0;
 	srclen = ft_strlen(src);
